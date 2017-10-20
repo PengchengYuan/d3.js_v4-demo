@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo1</title>
+</head>
+<body>
+<nav>
+    <a href="./demo1.html">1.简单的柱状图</a>
+    <a href="./demo2.html">2.比例尺</a>
+    <a href="./demo3.html">3.坐标轴</a>
+    <a href="./demo4.html">4.完整柱状图</a>
+    <a href="./demo5.html">5.动态效果及交互</a>
+    <a href="./demo6.html">6.饼图</a>
+    <a href="./demo7.html">7.集群图</a>
+    <a href="./demo8.html">8.树状图</a>
+    <a href="./demo9.html">9.打包图</a>
+    <a href="./demo10.html">10.中国地图</a>
+    <a href="./demo11.html">11.力导向图</a>
+</nav>
+ <h1>demo1 - 简单的柱状图</h1>
+ <svg>
+     <rect></rect>
+     <rect></rect>
+     <!--<rect></rect>
+     <rect></rect>
+     <rect></rect>
+     <rect></rect>
+     <rect></rect>-->
+ </svg>
+
+
+ <script src="../js/lib/d3.min.js"></script>
+ <script>
+    var width = 300;  //画布的宽度
+    var height = 300;   //画布的高度
+    var dataset = [ 250 , 210 , 170 , 130 , 90 ];
+    var rectHeight = 25;
+    var body = d3.select("body")
+
+    var svg = body.selectAll("svg")
+    .attr("width", width)       //设定宽度
+    .attr("height", height);     //设定高度
+
+    var update = svg.selectAll("rect")        //update
+
+    update.data(dataset)
+    .exit()                    //dom多数据少时删除多余dom    exit
+    .remove();
+
+    update.data(dataset)
+    .enter()                  //dom少数据多时自动添加        enter
+    .append("rect")
+    .merge(update)
+    .attr("x",20)
+    .attr("y",function(d,i){
+        return i * rectHeight;
+    })
+    .attr("width",function(d){
+        return d;
+    })
+    .attr("height",rectHeight-2)
+    .attr("fill","steelblue");
+
+ </script>
+</body>
+</html>

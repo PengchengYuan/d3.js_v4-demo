@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo10</title>
+</head>
+<body>
+<nav>
+    <a href="./demo1.html">1.简单的柱状图</a>
+    <a href="./demo2.html">2.比例尺</a>
+    <a href="./demo3.html">3.坐标轴</a>
+    <a href="./demo4.html">4.完整柱状图</a>
+    <a href="./demo5.html">5.动态效果及交互</a>
+    <a href="./demo6.html">6.饼图</a>
+    <a href="./demo7.html">7.集群图</a>
+    <a href="./demo8.html">8.树状图</a>
+    <a href="./demo9.html">9.打包图</a>
+    <a href="./demo10.html">10.中国地图</a>
+    <a href="./demo11.html">11.力导向图</a>
+</nav>
+<h1>中国地图</h1>
+<svg></svg>
+<script src="../js/lib/d3.js"></script>
+<script>
+    var width  = 1000;
+    var height = 800;
+
+    var group = d3.select("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(0,0)");
+
+
+    var projection = d3.geoMercator()             //投影选择圆柱投影
+    .center([107,38])                            //  设置或获取投影的中心
+    .scale(800)                                    //设置或获取投影的缩放因子
+    .translate([width/2, height/2]);               // 设置投影的平移偏移量
+
+    var path = d3.geoPath()                        //使用默认的设置构建一个地理路径生成器
+    .projection(projection);                        //设置地理路径生成器的投影方式
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    d3.json("../json/china.json", function(error, root) {
+        if (error){
+            return console.error(error);
+        }
+        group.selectAll("path")
+        .data(root.features)
+        .enter()
+        .append("path")
+        .attr("stroke","#000")
+        .attr("stroke-width",1)
+        .attr("fill", function(d,i){
+            return color(i);
+        })
+        .attr("d", path )
+        .on("mouseover",function(d,i){
+            d3.select(this)
+            .attr("fill","yellow");
+        })
+        .on("mouseout",function(d,i){
+            d3.select(this)
+            .attr("fill",color(i));
+        });
+    });
+
+</script>
+</body>
+</html>

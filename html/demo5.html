@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo5</title>
+</head>
+<style>
+    .axis path,
+    .axis line{
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+
+    .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+
+    .MyText {
+        fill: white;
+        text-anchor: middle;
+    }
+</style>
+<body>
+<nav>
+    <a href="./demo1.html">1.简单的柱状图</a>
+    <a href="./demo2.html">2.比例尺</a>
+    <a href="./demo3.html">3.坐标轴</a>
+    <a href="./demo4.html">4.完整柱状图</a>
+    <a href="./demo5.html">5.动态效果及交互</a>
+    <a href="./demo6.html">6.饼图</a>
+    <a href="./demo7.html">7.集群图</a>
+    <a href="./demo8.html">8.树状图</a>
+    <a href="./demo9.html">9.打包图</a>
+    <a href="./demo10.html">10.中国地图</a>
+    <a href="./demo11.html">11.力导向图</a>
+</nav>
+<h1>动态效果及交互</h1>
+<svg class="svg1"></svg>
+<svg class="svg2"></svg>
+<script src="../js/lib/d3.js"></script>
+<script>
+    //定义画布
+    var svg1 = d3.select('.svg1').attr('width',400).attr('height',400)
+    var svg2 = d3.select('.svg2').attr('width',400).attr('height',400)
+    svg1.append("circle")
+    .attr("cx", 100)
+    .attr("cy", 100)
+    .attr("r", 45)
+    .style("fill","green")
+    .transition()     //启动过渡效果。
+    .duration(1000)   //指定过渡的持续时间，单位为毫秒。
+    .attr("cx", 300)
+
+    svg1.append("circle")
+    .attr("cx", 100)
+    .attr("cy", 100)
+    .attr("r", 45)
+    .style("fill","red")
+    .transition()
+    .duration(1000)
+    .attr("cx", 300)
+    .attr("r", 10)
+    .style("fill","yellow");
+
+
+
+    var data = [50,40,60,70,10,30,20]
+    //定义画布
+    var svg = d3.select('.svg2')
+    .attr('width',400)
+    .attr('height',400)
+
+    //定义比例尺
+    var yScale = d3.scaleLinear()
+    .domain([0,d3.max(data)])
+    .range([400-30-30,0])     //上下padding 30px
+
+    var xScale = d3.scaleBand()
+    .domain(d3.range(data.length))
+    .range([0,400-30-30]);
+
+    //画柱形图
+    var rect = svg
+    .selectAll('rect')
+
+    rect
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr("transform","translate(30,30)")
+    .attr('class','MyRect')
+    .attr('x',function (d,i){
+        return xScale(i) + 10
+    })
+    .attr('y',function (){
+        var min = yScale.domain()[0];
+        return yScale(min)
+    })
+    .attr('width',xScale.bandwidth()-10)
+    .attr('height',0)
+    .attr("fill","steelblue")
+    .on("mouseover",function(d,i){
+        d3.select(this)
+        .attr("fill","yellow");
+    })
+    .on("mouseout",function(d,i){
+        d3.select(this)
+        .transition()
+        .duration(500)
+        .attr("fill","steelblue");
+    })
+    .transition()
+    .delay(function(d,i){
+        return i * 200;
+    })
+    .duration(2000)
+    .ease(d3.easeElastic)
+    .attr("y",function(d){
+        return yScale(d);
+    })
+    .attr("height", function(d){
+        return 400 - 30 - 30 - yScale(d);
+    })
+
+
+    //画坐标轴
+    var xAxis = d3.axisBottom(xScale)    //指定比例尺
+    .ticks(7);                          //分成多少段     设456都一样？
+    svg.append("g")
+    .attr("transform","translate(35,370)")
+    .call(xAxis);
+
+    var yAxis = d3.axisLeft(yScale)    //指定比例尺
+    .ticks(7);
+    svg.append("g")
+    .attr("transform","translate(35,30)")
+    .call(yAxis);
+
+    //加入文字
+    var texts = svg.selectAll(".MyText")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class","MyText")
+    .attr("transform","translate(30,30)")
+    .attr("x", function(d,i){
+        return xScale(i) + 10;
+    } )
+    .attr("y",function(d){
+        return yScale(d);
+    })
+    .attr("dx",function(){
+        return (xScale.bandwidth()-10)/2;
+    })
+    .attr("dy",function(d){
+        return 20;
+    })
+    .text(function(d){
+        return d;
+    })
+</script>
+</body>
+</html>

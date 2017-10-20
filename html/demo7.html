@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo7</title>
+</head>
+<body>
+<nav>
+    <a href="./demo1.html">1.简单的柱状图</a>
+    <a href="./demo2.html">2.比例尺</a>
+    <a href="./demo3.html">3.坐标轴</a>
+    <a href="./demo4.html">4.完整柱状图</a>
+    <a href="./demo5.html">5.动态效果及交互</a>
+    <a href="./demo6.html">6.饼图</a>
+    <a href="./demo7.html">7.集群图</a>
+    <a href="./demo8.html">8.树状图</a>
+    <a href="./demo9.html">9.打包图</a>
+    <a href="./demo10.html">10.中国地图</a>
+    <a href="./demo11.html">11.力导向图</a>
+</nav>
+<h1>集群图</h1>
+<svg></svg>
+<script src="../js/lib/d3.js"></script>
+<script>
+    d3.json("../json/city.json", function(error, root) {
+
+        var cluster =  d3.cluster()     //构建一个默认的群集布局。
+        .size([500, 300]);              //设置或获取布局的尺寸
+
+        var roots = d3.hierarchy(root);   //将数据转换成hierarchy数据布局
+        cluster(roots);     //将指定的根节点代表的hierarchy数据布局为群集结构
+        console.log(roots.ancestors());      //以数组的形式放返回当前节点的所有祖先元素。
+        console.log(roots.descendants());    // 返回当前节点所有的后代节点
+        console.log(roots.leaves());         //返回以当前节点为根节点的子树的所有叶节点
+        console.log(roots.ancestors());      //以数组的形式放返回当前节点的所有祖先元素。
+
+
+        var nodes = roots.descendants();
+        var links = roots.links();
+        var diagonal = d3.linkHorizontal()
+        .x(function(d) { return d.y; })
+        .y(function(d) { return d.x; });
+
+
+        //定义画布
+        var svg = d3.select('svg')
+        .attr('width',500)
+        .attr('height',500)
+
+
+        svg.selectAll("path")
+        .data(links)
+        .enter()
+        .append("path")
+        .attr("d", diagonal)
+        .attr('fill','none')
+        .attr('stroke','#333')
+        .attr("transform",function (d){
+            return  'translate(50,0)'
+        })
+
+        var g = svg.selectAll("g")
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("transform",function (d){
+            return  'translate('+ (d.y+50) +','+ d.x +')'
+        })
+
+        g.append("circle")
+        .attr("r", 4.5)
+        .style("fill","#fff")
+        .style("stroke","steelblue")
+        .style("stroke-width","1.5px")
+
+        g.append("text")
+        .attr("dx", function(d) { return d.children ? -10 : 15; })
+        .attr("dy", 3)
+        .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+        .text(function(d) { return d.data.name; });
+    })
+
+
+</script>
+</body>
+</html>

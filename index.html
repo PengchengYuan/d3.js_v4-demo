@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页-初体验</title>
+    <style>
+        div {
+            padding-bottom: 40px;
+        }
+        ul,li{
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <nav>
+        <a href="./html/demo1.html">demo1</a>
+        <a href="./html/demo2.html">demo2</a>
+        <a href="./html/demo3.html">demo3</a>
+        <a href="./html/demo4.html">demo4</a>
+        <a href="./html/demo5.html">demo5</a>
+        <a href="./html/demo6.html">demo6</a>
+        <a href="./html/demo7.html">demo7</a>
+        <a href="./html/demo8.html">demo8</a>
+        <a href="./html/demo9.html">demo9</a>
+        <a href="./html/demo10.html">demo10</a>
+    </nav>
+</div>
+
+<h1>初试D3.js</h1>
+一、selectAll select 和 style
+<div>
+    <p>Hello World p1</p>
+    <p>Hello World p2</p>
+</div>
+<div>
+    <span>Hello World d1</span><br>
+    <span>Hello World d2</span>
+</div>
+
+二、data datum
+<div>
+    <i>1111111</i> <br> <i>22222222</i> <br> <i>3333333</i>
+</div>
+<div>
+    <em>1111111</em> <br> <em>22222222</em> <br> <em>3333333</em>
+</div>
+
+三、 插入、删除元素
+<div class="test3">
+    <ul class="insert">
+        <li>insert1</li>
+        <li>insert2</li>
+        <li>insert3</li>
+    </ul>
+</div>
+
+<script src="js/lib/d3.min.js"></script>
+<script>
+    //一、selectAll select 和 style
+    var body = d3.select("body");
+    //1.selectAll  与 select  同原生querySelector  querySelectorAll
+    var p = body.select("p").text("select初体验");
+
+    var span = body.selectAll("span").text("selectAll初体验");
+
+    //2.style  类似  css 但不支持json参数
+    p.style("color", "red").style("font-weight", "600");
+    p.style({"color": "blue", "font-size": "12px"})         //不支持
+    span.style("color", "blue");
+
+    //二.绑定数据
+    body.selectAll("i")
+    .datum('绑定数据')
+    .text(function (d, i) {
+        return "第 " + i + " 个元素绑定的数据是 " + d;
+    });
+
+    var arr1 = ["data1", "data2"]
+    var arr2 = ["data1", "data2", "data3", "data4"]
+    body.selectAll("em")
+    .data(arr2)
+    .text(function (d, i) {
+        return "第 " + i + " 个元素绑定的数据是 " + d;
+    });
+    
+    //三、插入、删除元素
+    //append
+    body.select('.test3')
+    .append('p')
+    .text('append  p');
+    //insert
+    body
+    .insert('p',".test3")
+    .text('insert p')
+    //remove
+    body.select('.test3 li:first-child').remove();
+
+
+</script>
+</body>
+</html>

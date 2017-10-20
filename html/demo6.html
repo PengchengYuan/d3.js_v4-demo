@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo6</title>
+</head>
+<body>
+<nav>
+    <a href="./demo1.html">1.简单的柱状图</a>
+    <a href="./demo2.html">2.比例尺</a>
+    <a href="./demo3.html">3.坐标轴</a>
+    <a href="./demo4.html">4.完整柱状图</a>
+    <a href="./demo5.html">5.动态效果及交互</a>
+    <a href="./demo6.html">6.饼图</a>
+    <a href="./demo7.html">7.集群图</a>
+    <a href="./demo8.html">8.树状图</a>
+    <a href="./demo9.html">9.打包图</a>
+    <a href="./demo10.html">10.中国地图</a>
+    <a href="./demo11.html">11.力导向图</a>
+</nav>
+<h1>饼图</h1>
+<svg></svg>
+<script src="../js/lib/d3.js"></script>
+<script>
+    //定义画布
+    var svg = d3.select('svg')
+    .attr('width',400)
+    .attr('height',400)
+
+    var data = [50,40,60,70,10,30,20]
+    var pie = d3.pie();
+    var piedata = pie(data);     //转换成饼图所需要的数据格式
+    var color = d3.scaleOrdinal(d3.schemeCategory10);  //参数 d3.schemeCategory10  d3.schemeCategory20  d3.schemeCategory20b d3.schemeCategory20c
+
+    var arc = d3.arc()             //弧生成器      innerRadius: 0,outerRadius: 100,startAngle: 0,endAngle: Math.PI / 2,
+    .innerRadius(0)
+    .outerRadius(150)
+
+    var arcs = svg.selectAll("g")   //添加svg   画图
+    .data(piedata)
+    .enter()
+    .append("g")
+    .attr("transform","translate(200,200)")
+
+    arcs.append("path")
+    .attr("fill",function(d,i){
+        return color(i);
+    })
+    .attr("d",function(d){
+        return arc(d);                          //调用弧生成器，得到路径值
+    })
+    .on("mouseover",function(d,i){
+        d3.select(this.parentNode)
+        .select('text')
+        .attr("fill","red")
+
+        d3.select(this)
+        .attr("fill","yellow");
+    })
+    .on("mouseout",function(d,i){
+        d3.select(this)
+        .transition()
+        .duration(500)
+        .attr("fill",color(i));
+
+        d3.select(this.parentNode)
+        .select('text')
+        .attr("fill","white")
+    })
+
+    arcs.append("text")
+    .attr("transform",function(d){
+        return "translate(" + arc.centroid(d) + ")";
+    })
+    .attr("text-anchor","middle")
+    .text(function(d){
+        return d.data;
+    })
+    .attr('fill','white')
+
+</script>
+</body>
+</html>
