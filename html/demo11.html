@@ -2,36 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>demo10</title>
+    <title>demo11</title>
 </head>
 <body>
-<nav>
-    <a href="./demo1.html">1.简单的柱状图</a>
-    <a href="./demo2.html">2.比例尺</a>
-    <a href="./demo3.html">3.坐标轴</a>
-    <a href="./demo4.html">4.完整柱状图</a>
-    <a href="./demo5.html">5.动态效果及交互</a>
-    <a href="./demo6.html">6.饼图</a>
-    <a href="./demo7.html">7.集群图</a>
-    <a href="./demo8.html">8.树状图</a>
-    <a href="./demo9.html">9.打包图</a>
-    <a href="./demo10.html">10.中国地图</a>
-    <a href="./demo11.html">11.力导向图</a>
-</nav>
-<h1>力导向图</h1>
+<h1>中国地图</h1>
 <svg></svg>
 <script src="../js/lib/d3.js"></script>
 <script>
-    var nodesData = [ { name: "桂林" }, { name: "广州" },
-        { name: "厦门" }, { name: "杭州" },
-        { name: "上海" }, { name: "青岛" },
-        { name: "天津" } ];
-
-    var edges = [ { source : 0 , target: 1 } , { source : 0 , target: 2 } ,
-        { source : 0 , target: 3 } , { source : 1 , target: 4 } ,
-        { source : 1 , target: 5 } , { source : 1 , target: 6 } ];
-    var width  = 400;
-    var height = 400;
+    var width = 1000;
+    var height = 800;
 
     var group = d3.select("svg")
     .attr("width", width)
@@ -40,63 +19,37 @@
     .attr("transform", "translate(0,0)");
 
 
-    var force = d3.forceSimulation(nodesData)
-    .force("charge", d3.forceManyBody().strength([-400]))	 //节点间的作用力
-    .force("link", d3.forceLink(edges).distance([150]))	      //连线作用力
-    .force("link", d3.forceCenter(200, 200))
+    var projection = d3.geoMercator()             //投影选择圆柱投影
+    .center([107, 38])                            //  设置或获取投影的中心
+    .scale(800)                                    //设置或获取投影的缩放因子
+    .translate([width / 2, height / 2]);               // 设置投影的平移偏移量
 
-    force.restart();
-
-
-    //添加连线
-    var links = group.selectAll("line")
-    .data(edges)
-    .enter()
-    .append("line")
-    .style("stroke","#ccc")
-    .style("stroke-width",1);
-
+    var path = d3.geoPath()                        //使用默认的设置构建一个地理路径生成器
+    .projection(projection);                        //设置地理路径生成器的投影方式
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    //添加节点
-    var nodes = group.selectAll("circle")
-    .data(nodesData)
-    .enter()
-    .append("circle")
-    .attr("r",20)
-    .style("fill",function(d,i){
-        return color(i);
-    })
-    .call(d3.drag());	//使得节点能够拖动
-
-    //添加描述节点的文字
-    var texts = group.selectAll("text")
-    .data(nodesData)
-    .enter()
-    .append("text")
-    .style("fill", "black")
-    .attr("dx", 20)
-    .attr("dy", 8)
-    .text(function(d){
-        return d.name;
-    });
-
-
-    force.on("tick", function(){	//对于每一个时间间隔
-
-        //更新连线坐标
-        links.attr("x1",function(d){ return d.source.x; })
-        .attr("y1",function(d){ return d.source.y; })
-        .attr("x2",function(d){ return d.target.x; })
-        .attr("y2",function(d){ return d.target.y; });
-
-        //更新节点坐标
-        nodes.attr("cx",function(d){ return d.x; })
-        .attr("cy",function(d){ return d.y; });
-
-        //更新文字坐标
-        texts.attr("x", function(d){ return d.x; })
-        .attr("y", function(d){ return d.y; });
+    d3.json("../json/china.json", function (error, root) {
+        if (error) {
+            return console.error(error);
+        }
+        group.selectAll("path")
+        .data(root.features)
+        .enter()
+        .append("path")
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1)
+        .attr("fill", function (d, i) {
+            return color(i);
+        })
+        .attr("d", path)
+        .on("mouseover", function (d, i) {
+            d3.select(this)
+            .attr("fill", "yellow");
+        })
+        .on("mouseout", function (d, i) {
+            d3.select(this)
+            .attr("fill", color(i));
+        });
     });
 
 </script>
